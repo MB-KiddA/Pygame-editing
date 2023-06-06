@@ -10,7 +10,7 @@ pygame.display.set_caption("Nuh Uh, My Game Now")
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
-GREEN = (255, 255, 0)
+GREEN = (0, 255, 0)
 
 BORDER = pygame.Rect(0, HEIGHT // 2, WIDTH, 10)
 
@@ -63,7 +63,7 @@ def draw_window(red, green, red_bullets, green_bullets, red_health, green_health
         pygame.draw.rect(WIN, RED, bullet)
 
     for bullet in green_bullets:
-        pygame.draw.rect(WIN, green, bullet)
+        pygame.draw.rect(WIN, GREEN, bullet)
 
     pygame.display.update()
 
@@ -199,10 +199,10 @@ def main():
 
         winner_text = ""
         if red_health <= 0:
-            winner_text = "WOOP WOOP green WINS!"
+            winner_text = "Green tha Winner!"
 
         if green_health <= 0:
-            winner_text = "WOOP WOOP RED WINS!"
+            winner_text = " Red Tha Winner!"
 
         if winner_text != "":
             draw_winner(winner_text)
