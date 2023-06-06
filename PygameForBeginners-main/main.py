@@ -14,11 +14,11 @@ YELLOW = (255, 255, 0)
 
 BORDER = pygame.Rect(0, HEIGHT // 2, WIDTH, 10)
 
-#BULLET_HIT_SOUND = pygame.mixer.Sound('Assets/Grenade+1.mp3')
-#BULLET_FIRE_SOUND = pygame.mixer.Sound('Assets/Gun+Silencer.mp3')
+#BULLET_HIT_SOUND = pygame.mixer.Sound('Assets/Bonk_Sound_Effect.mp3')
+#BULLET_FIRE_SOUND = pygame.mixer.Sound('Assets/Boing.mp3')
 
-HEALTH_FONT = pygame.font.SysFont('comicsans', 40)
-WINNER_FONT = pygame.font.SysFont('comicsans', 100)
+HEALTH_FONT = pygame.font.SysFont('arial', 40)
+WINNER_FONT = pygame.font.SysFont('arial', 100)
 
 FPS = 60
 VEL = 5
@@ -67,24 +67,24 @@ def draw_window(red, yellow, red_bullets, yellow_bullets, red_health, yellow_hea
 
 
 def yellow_handle_movement(keys_pressed, yellow):
-    if keys_pressed[pygame.K_a] and yellow.x - VEL > 0:  # LEFT
+    if keys_pressed[pygame.K_f] and yellow.x - VEL > 0:  # LEFT
         yellow.x -= VEL
-    if keys_pressed[pygame.K_d] and yellow.x + VEL < 740:  # RIGHT
+    if keys_pressed[pygame.K_h] and yellow.x + VEL < 740:  # RIGHT
         yellow.x += VEL
-    if keys_pressed[pygame.K_w] and yellow.y - VEL > BORDER.y:  # UP
+    if keys_pressed[pygame.K_t] and yellow.y - VEL > BORDER.y:  # UP
         yellow.y -= VEL
-    if keys_pressed[pygame.K_s] and yellow.y + VEL + yellow.height < HEIGHT - 20:  # DOWN
+    if keys_pressed[pygame.K_g] and yellow.y + VEL + yellow.height < HEIGHT - 20:  # DOWN
         yellow.y += VEL
 
 
 def red_handle_movement(keys_pressed, red):
-    if keys_pressed[pygame.K_LEFT] and red.x - VEL > 0:  # LEFT
+    if keys_pressed[pygame.K_KP4] and red.x - VEL > 0:  # LEFT
         red.x -= VEL
-    if keys_pressed[pygame.K_RIGHT] and red.x + VEL < 740:  # RIGHT
+    if keys_pressed[pygame.K_KP6] and red.x + VEL < 740:  # RIGHT
         red.x += VEL
-    if keys_pressed[pygame.K_UP] and red.y - VEL > 0:  # UP
+    if keys_pressed[pygame.K_KP8] and red.y - VEL > 0:  # UP
         red.y -= VEL
-    if keys_pressed[pygame.K_DOWN] and red.y + VEL < BORDER.y - 30:  # DOWN
+    if keys_pressed[pygame.K_KP5] and red.y + VEL < BORDER.y - 30:  # DOWN
         red.y += VEL
 
 
@@ -102,7 +102,7 @@ def handle_bullets(yellow_bullets, red_bullets, yellow, red):
         if yellow.colliderect(bullet):
             pygame.event.post(pygame.event.Event(YELLOW_HIT))
             red_bullets.remove(bullet)
-        elif bullet.x < 0:
+        elif bullet.y < 0:
             red_bullets.remove(bullet)
 
 
