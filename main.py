@@ -26,27 +26,27 @@ BULLET_VEL = 7
 SUPER_VEL = 3
 MAX_BULLETS = 3
 MAX_SUPER = 1
-SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 55, 40
+PLAYER_WIDTH, PLAYER_HEIGHT = 64, 64
 
 GREEN_HIT = pygame.USEREVENT + 1
 RED_HIT = pygame.USEREVENT + 2
 
-GREEN_SPACESHIP_IMAGE = pygame.image.load(
-    os.path.join('Assets', 'spaceship_green.png'))
-GREEN_SPACESHIP = pygame.transform.rotate(pygame.transform.scale(
-    GREEN_SPACESHIP_IMAGE, (SPACESHIP_WIDTH, SPACESHIP_HEIGHT)), 180)
+GREEN_PLAYER_IMAGE = pygame.image.load(
+    os.path.join('Assets', 'player_green.png'))
+GREEN_PLAYER = pygame.transform.rotate(pygame.transform.scale(
+    GREEN_PLAYER_IMAGE, (PLAYER_WIDTH, PLAYER_HEIGHT)), 180)
 
-RED_SPACESHIP_IMAGE = pygame.image.load(
-    os.path.join('Assets', 'spaceship_red.png'))
-RED_SPACESHIP = pygame.transform.rotate(pygame.transform.scale(
-    RED_SPACESHIP_IMAGE, (SPACESHIP_WIDTH, SPACESHIP_HEIGHT)), 0)
+RED_PLAYER_IMAGE = pygame.image.load(
+    os.path.join('Assets', 'player_red.png'))
+RED_PLAYER = pygame.transform.rotate(pygame.transform.scale(
+    RED_PLAYER_IMAGE, (PLAYER_WIDTH, PLAYER_HEIGHT)), 0)
 
-SPACE = pygame.transform.scale(pygame.image.load(
+BG = pygame.transform.scale(pygame.image.load(
     os.path.join('Assets', 'Background.png')), (WIDTH, HEIGHT))
 
 
 def draw_window(red, green, red_bullets, green_bullets, red_health, green_health):
-    WIN.blit(SPACE, (0, 0))
+    WIN.blit(BG, (0, 0))
     pygame.draw.rect(WIN, BLACK, BORDER)
 
     red_health_text = HEALTH_FONT.render(
@@ -56,8 +56,8 @@ def draw_window(red, green, red_bullets, green_bullets, red_health, green_health
     WIN.blit(red_health_text, (WIDTH - red_health_text.get_width() - 10, 10))
     WIN.blit(green_health_text, (10, 10))
 
-    WIN.blit(GREEN_SPACESHIP, (green.x, green.y))
-    WIN.blit(RED_SPACESHIP, (red.x, red.y))
+    WIN.blit(GREEN_PLAYER, (green.x, green.y))
+    WIN.blit(RED_PLAYER, (red.x, red.y))
 
     for bullet in red_bullets:
         pygame.draw.rect(WIN, RED, bullet)
@@ -135,8 +135,8 @@ def draw_winner(text):
 
 
 def main():
-    red = pygame.Rect(400, 100, SPACESHIP_WIDTH, SPACESHIP_HEIGHT)
-    green = pygame.Rect(400, 500, SPACESHIP_WIDTH, SPACESHIP_HEIGHT)
+    red = pygame.Rect(400, 100, PLAYER_WIDTH, PLAYER_HEIGHT)
+    green = pygame.Rect(400, 500, PLAYER_WIDTH, PLAYER_HEIGHT)
 
     red_bullets = []
     green_bullets = []
