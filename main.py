@@ -80,7 +80,7 @@ def yellow_handle_movement(keys_pressed, yellow):
 def red_handle_movement(keys_pressed, red):
     if keys_pressed[pygame.K_KP4] and red.x - VEL > 0:  # LEFT
         red.x -= VEL
-    if keys_pressed[pygame.K_KP6] and red.x + VEL < 740:  # RIGHT
+    if keys_pressed[pygame.K_KP6] and red.x + VEL < HEIGHT - 60:  # RIGHT
         red.x += VEL
     if keys_pressed[pygame.K_KP8] and red.y - VEL > 0:  # UP
         red.y -= VEL
@@ -94,7 +94,7 @@ def handle_bullets(yellow_bullets, red_bullets, yellow, red):
         if red.colliderect(bullet):
             pygame.event.post(pygame.event.Event(RED_HIT))
             yellow_bullets.remove(bullet)
-        elif bullet.y > HEIGHT:
+        elif bullet.y < 0:
             yellow_bullets.remove(bullet)
 
     for bullet in red_bullets:
@@ -102,7 +102,7 @@ def handle_bullets(yellow_bullets, red_bullets, yellow, red):
         if yellow.colliderect(bullet):
             pygame.event.post(pygame.event.Event(YELLOW_HIT))
             red_bullets.remove(bullet)
-        elif bullet.y < 0:
+        elif bullet.y > 800:
             red_bullets.remove(bullet)
 
 
@@ -157,10 +157,10 @@ def main():
 
         winner_text = ""
         if red_health <= 0:
-            winner_text = "Yellow Wins!"
+            winner_text = "WOOP WOOP YELLOW WINS!"
 
         if yellow_health <= 0:
-            winner_text = "Red Wins!"
+            winner_text = "WOOP WOOP RED WINS!"
 
         if winner_text != "":
             draw_winner(winner_text)
