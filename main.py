@@ -23,7 +23,9 @@ WINNER_FONT = pygame.font.SysFont('arial', 100)
 FPS = 60
 VEL = 5
 BULLET_VEL = 7
+SUPER_VEL = 3
 MAX_BULLETS = 3
+MAX_SUPER = 1
 SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 55, 40
 
 YELLOW_HIT = pygame.USEREVENT + 1
@@ -90,26 +92,44 @@ def red_handle_movement(keys_pressed, red):
 
 def handle_bullets(yellow_bullets, red_bullets, yellow, red):
     for bullet in yellow_bullets:
-        bullet.y -= BULLET_VEL
+        bullet.y -= 7
         if red.colliderect(bullet):
             pygame.event.post(pygame.event.Event(RED_HIT))
             yellow_bullets.remove(bullet)
         elif bullet.y < 0:
             yellow_bullets.remove(bullet)
 
+    for super in yellow_bullets:
+        super.y += SUPER_VEL - 1
+        if red.colliderect(super):
+            pygame.event.post(pygame.event.Event(RED_HIT))
+            yellow_bullets.remove(super)
+        elif super.y < 0:
+            yellow_bullets.remove(super)
+
     for bullet in red_bullets:
-        bullet.y += BULLET_VEL
+        bullet.y += 7
         if yellow.colliderect(bullet):
             pygame.event.post(pygame.event.Event(YELLOW_HIT))
             red_bullets.remove(bullet)
         elif bullet.y > 800:
             red_bullets.remove(bullet)
 
+    for super in red_bullets:
+        super.y += SUPER_VEL - 1
+        if yellow.colliderect(super):
+            pygame.event.post(pygame.event.Event(YELLOW_HIT))
+            red_bullets.remove(super)
+        elif super.y > 800:
+            red_bullets.remove(super)
+        
+
 
 def draw_winner(text):
     draw_text = WINNER_FONT.render(text, 1, WHITE)
     WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width() /
                          2, HEIGHT/2 - draw_text.get_height()/2))
+    
     pygame.display.update()
     pygame.time.delay(5000)
 
@@ -137,15 +157,37 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_i and len(yellow_bullets) < MAX_BULLETS:
                     bullet = pygame.Rect(
-                        yellow.x + yellow.width, yellow.y + yellow.height//2 - 2, 10, 5)
+                        yellow.x , yellow.y, 10, 5)
                     yellow_bullets.append(bullet)
                     #BULLET_FIRE_SOUND.play()
+
+                if event.key == pygame.K_o and len(yellow_bullets) < MAX_SUPER:
+                    super = pygame.Rect(
+                        yellow.x, yellow.y, 70, 10)
+                    yellow_bullets.append(super)
+                
+                if event.key == pygame.K_p and len(yellow_bullets) < MAX_SUPER:
+                    super = pygame.Rect(
+                        yellow.x, yellow.y, 10, 70)
+                    yellow_bullets.append(super)
 
                 if event.key == pygame.K_UP and len(red_bullets) < MAX_BULLETS:
                     bullet = pygame.Rect(
                         red.x, red.y + red.height//2 - 2, 10, 5)
                     red_bullets.append(bullet)
                     #BULLET_FIRE_SOUND.play()
+
+                if event.key == pygame.K_RIGHT and len(red_bullets) < MAX_SUPER:
+                    super = pygame.Rect(
+                        red.x, red.y + red.height//2 - 2, 70, 10)
+                    red_bullets.append(super)
+
+                if event.key == pygame.K_DOWN and len(red_bullets) < MAX_SUPER:
+                    super = pygame.Rect(
+                        red.x, red.y + red.height//2 - 2, 10, 70)
+                    red_bullets.append(super)
+                    
+                    
 
             if event.type == RED_HIT:
                 red_health -= 1
