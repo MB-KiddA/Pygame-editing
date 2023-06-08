@@ -17,7 +17,7 @@ GREEN = (0, 255, 0)
 BORDER = pygame.Rect(WIDTH // 2 - 5, 264, 10, WIDTH)
 
 ATTACK_HIT_SOUND = pygame.mixer.Sound('Assets/Bonk_Sound_Effect.mp3')
-BULLET_FIRE_SOUND = pygame.mixer.Sound('Assets/Boing.mp3')
+BULLET_FIRE_SOUND = pygame.mixer.Sound('Assets/Laser.mp3')
 ATTACK_FIRE_SOUND = pygame.mixer.Sound('Assets/Woosh.mp3')
 HEALTH_FONT = pygame.font.SysFont('arial', 40)
 WINNER_FONT = pygame.font.SysFont('arial', 100)
@@ -91,36 +91,33 @@ def p2_handle_movement(keys_pressed, p2):
 
 
 def handle_attacks(p1_attacks, p2_attacks, p1, p2):
-    for attack in p1_attacks:
-        bo = pygame.time.get_ticks(pygame.KEYDOWN, )
-        attack.x = p1.x + 64
-        attack.y = p1.y
-        if p2.colliderect(attack):
+    for swing in p1_attacks:
+
+        swing.x = p1.x + 64
+        swing.y = p1.y
+        if p2.colliderect(swing):
             pygame.event.post(pygame.event.Event(P1_HIT))
-            p1_attacks.remove(attack)
-        elif pygame.time.get_ticks() - bo > 500:
-            p1_attacks.remove(attack)
+            p1_attacks.remove(swing)
             
 
     for super in p1_attacks:
-        super.x += BULLET_VEL - 1
+        super.x += BULLET_VEL
         if p2.colliderect(super):
             pygame.event.post(pygame.event.Event(P1_HIT))
             p1_attacks.remove(super)
         elif super.x < 0:
             p1_attacks.remove(super)
 
-    for attack in p2_attacks:
-        bo = pygame.time.get_ticks()
-        attack.x = p2.x - 60
-        if p1.colliderect(attack):
+    for swing in p2_attacks:
+ 
+        swing.x = p2.x - 60
+        if p1.colliderect(swing):
             pygame.event.post(pygame.event.Event(P2_HIT))
-            p2_attacks.remove(attack)
-        elif pygame.get_ticks() - bo > 500:
-            p2_attacks.remove(attack)
+            p2_attacks.remove(swing)
 
-    for bullet in p2_attacks:
-        bullet.x -= BULLET_VEL - 1
+
+    for super in p2_attacks:
+        super.x -= BULLET_VEL
         if p1.colliderect(super):
             pygame.event.post(pygame.event.Event(P2_HIT))
             p2_attacks.remove(super)
@@ -141,7 +138,8 @@ def draw_winner(text):
 def main():
     p1 = pygame.Rect(200, 300, PLAYER_WIDTH, PLAYER_HEIGHT)
     p2 = pygame.Rect(600, 300, PLAYER_WIDTH, PLAYER_HEIGHT)
-    
+    gone = 0
+    here = 0
     p2_attacks = []
     p1_attacks = []
 
@@ -158,29 +156,42 @@ def main():
                 pygame.quit()
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_t and len(p1_attacks) < MAX_ATTACKS:
-                    attack = pygame.Rect(
-                        p1.x , p1.y, 15, 30)
-                    
-                    p1_attacks.append(attack)
+                if event.key == pygame.K_t:
+                    gone += 1
+                    print(gone)
+                    if gone == 1:
+                        swing = pygame.Rect(
+                            p1.x , p1.y, 70, 70)
+                        
+                        p1_attacks.append(swing)
 
-                    ATTACK_FIRE_SOUND.play()
+                        ATTACK_FIRE_SOUND.play()
+                    if gone == 2: 
+                        p1_attacks.remove(swing)
+                        gone = 0
+
+
 
                 if event.key == pygame.K_y and len(p1_attacks) < MAX_SUPER:
                     super = pygame.Rect(
-                        p1.x, p1.y, 70, 10)
+                        p1.x, p1.y + 30, 70, 10)
                     p1_attacks.append(super)
                 
                 if event.key == pygame.K_u and len(p1_attacks) < MAX_SUPER:
                     super = pygame.Rect(
-                        p1.x, p1.y, 10, 70)
+                        p1.x, p1.y + 30, 10, 70)
                     p1_attacks.append(super)
 
-                if event.key == pygame.K_UP and len(p2_attacks) < MAX_ATTACKS:
-                    attack = pygame.Rect(
-                        p2.x, p2.y + p2.height//2 - 2, 10, 5)
-                    p2_attacks.append(attack)
-                    ATTACK_FIRE_SOUND.play()
+                if event.key == pygame.K_UP:
+                    here += 1
+                    if here == 1:
+                        attack = pygame.Rect(
+                            p2.x, p2.y, 70, 70)
+                        p2_attacks.append(swing)
+                        ATTACK_FIRE_SOUND.play()
+                    if here == 2:
+                        p2_attacks.remove(swing)
+                        here = 0
 
                 if event.key == pygame.K_RIGHT and len(p2_attacks) < MAX_SUPER:
                     super = pygame.Rect(

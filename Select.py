@@ -1,27 +1,31 @@
 import pygame, os
 from Sprites import *
-from main import WIN, FPS, main, P1
+from main import WIN, FPS, main, P1, P2
 
 
 def draw_win(WIN):
+    WIN.blit(Rouge_Icon_sprite, (100, 600))
     WIN.blit(BG, (0,0))
+
 
     pygame.display.update()
 
-def player_sel(s1, pick):
+def player_sel(control, s1, pick):
     if pick == 0:
-        p1_controls(s1, pick)
+        p1_controls(control, s1)
     elif pick == 1:
-        p2_controls(s1, pick)
+        p2_controls(control, s1)
     elif pick == 2:
         main()
 
 
 def p1_controls(control, s1):
     if control[pygame.K_a]:
-        s1.remove(1)
+        s1.remove("car")
+        print(len(s1))
     if control[pygame.K_d]:
-        s1.append(1)
+        s1.append("car")
+        print(len(s1))
 
 def p2_controls(control, s1):
     if control[pygame.K_KP4]:
@@ -29,7 +33,7 @@ def p2_controls(control, s1):
     if control[pygame.K_KP6]:
         s1.append(1)
 
-def char_sel(s2, pick):
+def char_sel(s1, s2, pick):
     while pick == 0:
         if s2 == 1:
             P1 = Druid
@@ -51,7 +55,7 @@ def char_sel(s2, pick):
 
 
 def menu():
-    s1 = []
+    s1 = ["car", "car"]
     s2 = 0
     pick = 0
     clock = pygame.time.Clock()
@@ -63,11 +67,12 @@ def menu():
             if event.type == pygame.QUIT:
                 run = False
                 pygame.quit
+                
     
-            if s1.index() > 3:
+            if len(s1) > 3:
                 s1.clear()
-            if s1.index() < 0:
-                s1.append(1) and s1.append(1) and s1.append(1) and s1.append(1)
+            if len(s1) < 0:
+                s1.append("car") and s1.append("car") and s1.append("car") and s1.append("car")
 
             if event.type == pygame.KEYDOWN:
                 if event.type == pygame.K_t or pygame.K_y or pygame.K_u:
@@ -76,11 +81,11 @@ def menu():
 
             if event.type == pygame.KEYDOWN:
                 if event.type == pygame.K_UP or pygame.K_RIGHT or pygame.K_DOWN:
-                    s2 = len(s2)
+                    s2 = len(s1)
                     pick += 1
                 
-    player_sel(s1, pick)
-    draw_win()
+    player_sel(s1, pick, control)
+    draw_win(WIN)
 
 
     menu()
