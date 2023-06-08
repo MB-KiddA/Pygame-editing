@@ -1,127 +1,131 @@
 import pygame
 import os
+from Sprites import *
+
 pygame.font.init()
 pygame.mixer.init()
 
 WIDTH, HEIGHT = 800, 600
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Nuh Uh, My Game Now")
+pygame.display.set_caption("Medieval Mayham")
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 
-BORDER = pygame.Rect(0, HEIGHT // 2, WIDTH, 10)
+BORDER = pygame.Rect(WIDTH // 2 - 5, 264, 10, WIDTH)
 
-BULLET_HIT_SOUND = pygame.mixer.Sound('Assets/Bonk_Sound_Effect.mp3')
+ATTACK_HIT_SOUND = pygame.mixer.Sound('Assets/Bonk_Sound_Effect.mp3')
 BULLET_FIRE_SOUND = pygame.mixer.Sound('Assets/Boing.mp3')
-
+ATTACK_FIRE_SOUND = pygame.mixer.Sound('Assets/Woosh.mp3')
 HEALTH_FONT = pygame.font.SysFont('arial', 40)
 WINNER_FONT = pygame.font.SysFont('arial', 100)
 
 FPS = 60
 VEL = 5
 BULLET_VEL = 7
-SUPER_VEL = 3
-MAX_BULLETS = 3
-MAX_SUPER = 1
+MAX_ATTACKS = 1
+MAX_SUPER = 3
 PLAYER_WIDTH, PLAYER_HEIGHT = 64, 64
 
-GREEN_HIT = pygame.USEREVENT + 1
-RED_HIT = pygame.USEREVENT + 2
+#P1 = RED P2 = GREEN
+P2_HIT = pygame.USEREVENT + 1
+P1_HIT = pygame.USEREVENT + 2
 
-GREEN_PLAYER_IMAGE = pygame.image.load(
+
+P1_IMAGE = pygame.image.load(
     os.path.join('Assets', 'player_green.png'))
-GREEN_PLAYER = pygame.transform.rotate(pygame.transform.scale(
-    GREEN_PLAYER_IMAGE, (PLAYER_WIDTH, PLAYER_HEIGHT)), 180)
+P1 = pygame.transform.rotate(pygame.transform.scale(
+    P1_IMAGE, (PLAYER_WIDTH, PLAYER_HEIGHT)), 90)
 
-RED_PLAYER_IMAGE = pygame.image.load(
+P2_IMAGE = pygame.image.load(
     os.path.join('Assets', 'player_red.png'))
-RED_PLAYER = pygame.transform.rotate(pygame.transform.scale(
-    RED_PLAYER_IMAGE, (PLAYER_WIDTH, PLAYER_HEIGHT)), 0)
-
-BG = pygame.transform.scale(pygame.image.load(
-    os.path.join('Assets', 'Background.png')), (WIDTH, HEIGHT))
+P2 = pygame.transform.rotate(pygame.transform.scale(
+    P2_IMAGE, (PLAYER_WIDTH, PLAYER_HEIGHT)), 270)
 
 
-def draw_window(red, green, red_bullets, green_bullets, red_health, green_health):
-    WIN.blit(BG, (0, 0))
+def draw_window(p2, p1, p2_attacks, p1_attacks, p2_health, p1_health):
+    WIN.blit(BGG, (0, 0))
     pygame.draw.rect(WIN, BLACK, BORDER)
 
-    red_health_text = HEALTH_FONT.render(
-        "Dabloons: " + str(red_health), 1, WHITE)
-    green_health_text = HEALTH_FONT.render(
-        "Dabloons: " + str(green_health), 1, WHITE)
-    WIN.blit(red_health_text, (WIDTH - red_health_text.get_width() - 10, 10))
-    WIN.blit(green_health_text, (10, 10))
+    p2_health_text = HEALTH_FONT.render(
+        "Dabloons: " + str(p2_health), 1, WHITE)
+    p1_health_text = HEALTH_FONT.render(
+        "Dabloons: " + str(p1_health), 1, WHITE)
+    WIN.blit(p2_health_text, (WIDTH - p2_health_text.get_width() - 10, 10))
+    WIN.blit(p1_health_text, (10, 10))
 
-    WIN.blit(GREEN_PLAYER, (green.x, green.y))
-    WIN.blit(RED_PLAYER, (red.x, red.y))
+    WIN.blit(P1, (p1.x, p1.y))
+    WIN.blit(P2, (p2.x, p2.y))
 
-    for bullet in red_bullets:
-        pygame.draw.rect(WIN, RED, bullet)
+    for attack in p2_attacks:
+        pygame.draw.rect(WIN, RED, attack)
 
-    for bullet in green_bullets:
-        pygame.draw.rect(WIN, GREEN, bullet)
+    for attack in p1_attacks:
+        pygame.draw.rect(WIN, GREEN, attack)
 
     pygame.display.update()
 
 
-def green_handle_movement(keys_pressed, green):
-    if keys_pressed[pygame.K_a] and green.x - VEL > 0:  # LEFT
-        green.x -= VEL
-    if keys_pressed[pygame.K_d] and green.x + VEL < 740:  # RIGHT
-        green.x += VEL
-    if keys_pressed[pygame.K_w] and green.y - VEL > BORDER.y:  # UP
-        green.y -= VEL
-    if keys_pressed[pygame.K_s] and green.y + VEL + green.height < HEIGHT - 20:  # DOWN
-        green.y += VEL
+def p1_handle_movement(keys_pressed, p1):
+    if keys_pressed[pygame.K_a] and p1.x - VEL > 0 - 5:  # LEFT
+        p1.x -= VEL
+    if keys_pressed[pygame.K_d] and p1.x + VEL < BORDER.x - 60:  # RIGHT
+        p1.x += VEL
+    if keys_pressed[pygame.K_w] and p1.y - VEL > 259:  # UP
+        p1.y -= VEL
+    if keys_pressed[pygame.K_s] and p1.y + VEL < 600 - 60:  # DOWN
+        p1.y += VEL
+
+def p2_handle_movement(keys_pressed, p2):
+    if keys_pressed[pygame.K_KP4] and p2.x - VEL > BORDER.x + 5:  # LEFT
+        p2.x -= VEL
+    if keys_pressed[pygame.K_KP6] and p2.x + VEL < 800 - 60:  # RIGHT
+        p2.x += VEL
+    if keys_pressed[pygame.K_KP8] and p2.y - VEL > 259:  # UP
+        p2.y -= VEL
+    if keys_pressed[pygame.K_KP5] and p2.y + VEL < 600 - 60:  # DOWN
+        p2.y += VEL
 
 
-def red_handle_movement(keys_pressed, red):
-    if keys_pressed[pygame.K_KP4] and red.x - VEL > 0:  # LEFT
-        red.x -= VEL
-    if keys_pressed[pygame.K_KP6] and red.x + VEL < HEIGHT - 60:  # RIGHT
-        red.x += VEL
-    if keys_pressed[pygame.K_KP8] and red.y - VEL > 0:  # UP
-        red.y -= VEL
-    if keys_pressed[pygame.K_KP5] and red.y + VEL < BORDER.y - 30:  # DOWN
-        red.y += VEL
 
+def handle_attacks(p1_attacks, p2_attacks, p1, p2):
+    for attack in p1_attacks:
+        bo = pygame.time.get_ticks(pygame.KEYDOWN, )
+        attack.x = p1.x + 64
+        attack.y = p1.y
+        if p2.colliderect(attack):
+            pygame.event.post(pygame.event.Event(P1_HIT))
+            p1_attacks.remove(attack)
+        elif pygame.time.get_ticks() - bo > 500:
+            p1_attacks.remove(attack)
+            
 
-def handle_bullets(green_bullets, red_bullets, green, red):
-    for bullet in green_bullets:
-        bullet.y -= BULLET_VEL
-        if red.colliderect(bullet):
-            pygame.event.post(pygame.event.Event(RED_HIT))
-            green_bullets.remove(bullet)
-        elif bullet.y < 0:
-            green_bullets.remove(bullet)
+    for super in p1_attacks:
+        super.x += BULLET_VEL - 1
+        if p2.colliderect(super):
+            pygame.event.post(pygame.event.Event(P1_HIT))
+            p1_attacks.remove(super)
+        elif super.x < 0:
+            p1_attacks.remove(super)
 
-    for super in green_bullets:
-        super.y += SUPER_VEL - 1
-        if red.colliderect(super):
-            pygame.event.post(pygame.event.Event(RED_HIT))
-            green_bullets.remove(super)
-        elif super.y < 0:
-            green_bullets.remove(super)
+    for attack in p2_attacks:
+        bo = pygame.time.get_ticks()
+        attack.x = p2.x - 60
+        if p1.colliderect(attack):
+            pygame.event.post(pygame.event.Event(P2_HIT))
+            p2_attacks.remove(attack)
+        elif pygame.get_ticks() - bo > 500:
+            p2_attacks.remove(attack)
 
-    for bullet in red_bullets:
-        bullet.y += BULLET_VEL
-        if green.colliderect(bullet):
-            pygame.event.post(pygame.event.Event(GREEN_HIT))
-            red_bullets.remove(bullet)
-        elif bullet.y > 800:
-            red_bullets.remove(bullet)
-
-    for super in red_bullets:
-        super.y += SUPER_VEL - 1
-        if green.colliderect(super):
-            pygame.event.post(pygame.event.Event(GREEN_HIT))
-            red_bullets.remove(super)
-        elif super.y > 800:
-            red_bullets.remove(super)
+    for bullet in p2_attacks:
+        bullet.x -= BULLET_VEL - 1
+        if p1.colliderect(super):
+            pygame.event.post(pygame.event.Event(P2_HIT))
+            p2_attacks.remove(super)
+        elif super.x > 800:
+            p2_attacks.remove(super)
         
 
 
@@ -135,15 +139,14 @@ def draw_winner(text):
 
 
 def main():
-    red = pygame.Rect(400, 100, PLAYER_WIDTH, PLAYER_HEIGHT)
-    green = pygame.Rect(400, 500, PLAYER_WIDTH, PLAYER_HEIGHT)
+    p1 = pygame.Rect(200, 300, PLAYER_WIDTH, PLAYER_HEIGHT)
+    p2 = pygame.Rect(600, 300, PLAYER_WIDTH, PLAYER_HEIGHT)
+    
+    p2_attacks = []
+    p1_attacks = []
 
-    red_bullets = []
-    green_bullets = []
-
-    red_health = 10
-    green_health = 10
-
+    p2_health = 2
+    p1_health = 2
     clock = pygame.time.Clock()
     run = True
     while run:
@@ -155,53 +158,57 @@ def main():
                 pygame.quit()
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_i and len(green_bullets) < MAX_BULLETS:
-                    bullet = pygame.Rect(
-                        green.x , green.y, 10, 5)
-                    green_bullets.append(bullet)
-                    BULLET_FIRE_SOUND.play()
+                if event.key == pygame.K_t and len(p1_attacks) < MAX_ATTACKS:
+                    attack = pygame.Rect(
+                        p1.x , p1.y, 15, 30)
+                    
+                    p1_attacks.append(attack)
 
-                if event.key == pygame.K_o and len(green_bullets) < MAX_SUPER:
+                    ATTACK_FIRE_SOUND.play()
+
+                if event.key == pygame.K_y and len(p1_attacks) < MAX_SUPER:
                     super = pygame.Rect(
-                        green.x, green.y, 70, 10)
-                    green_bullets.append(super)
+                        p1.x, p1.y, 70, 10)
+                    p1_attacks.append(super)
                 
-                if event.key == pygame.K_p and len(green_bullets) < MAX_SUPER:
+                if event.key == pygame.K_u and len(p1_attacks) < MAX_SUPER:
                     super = pygame.Rect(
-                        green.x, green.y, 10, 70)
-                    green_bullets.append(super)
+                        p1.x, p1.y, 10, 70)
+                    p1_attacks.append(super)
 
-                if event.key == pygame.K_UP and len(red_bullets) < MAX_BULLETS:
-                    bullet = pygame.Rect(
-                        red.x, red.y + red.height//2 - 2, 10, 5)
-                    red_bullets.append(bullet)
-                    BULLET_FIRE_SOUND.play()
+                if event.key == pygame.K_UP and len(p2_attacks) < MAX_ATTACKS:
+                    attack = pygame.Rect(
+                        p2.x, p2.y + p2.height//2 - 2, 10, 5)
+                    p2_attacks.append(attack)
+                    ATTACK_FIRE_SOUND.play()
 
-                if event.key == pygame.K_RIGHT and len(red_bullets) < MAX_SUPER:
+                if event.key == pygame.K_RIGHT and len(p2_attacks) < MAX_SUPER:
                     super = pygame.Rect(
-                        red.x, red.y + red.height//2 - 2, 70, 10)
-                    red_bullets.append(super)
+                        p2.x, p2.y + p2.height//2 - 2, 70, 10)
+                    p2_attacks.append(super)
 
-                if event.key == pygame.K_DOWN and len(red_bullets) < MAX_SUPER:
+                if event.key == pygame.K_DOWN and len(p2_attacks) < MAX_SUPER:
                     super = pygame.Rect(
-                        red.x, red.y + red.height//2 - 2, 10, 70)
-                    red_bullets.append(super)
+                        p2.x, p2.y + p2.height//2 - 2, 10, 70)
+                    p2_attacks.append(super)
                     
                     
 
-            if event.type == RED_HIT:
-                red_health -= 1
-                BULLET_HIT_SOUND.play()
+            if event.type == P1_HIT:
+                p2_health -= 1
+                p1_health += 1
+                ATTACK_HIT_SOUND.play()
 
-            if event.type == GREEN_HIT:
-                green_health -= 1
-                BULLET_HIT_SOUND.play()
+            if event.type == P2_HIT:
+                p1_health -= 1
+                p2_health += 1
+                ATTACK_HIT_SOUND.play()
 
         winner_text = ""
-        if red_health <= 0:
+        if p2_health <= 0:
             winner_text = "Green tha Winner!"
 
-        if green_health <= 0:
+        if p1_health <= 0:
             winner_text = " Red Tha Winner!"
 
         if winner_text != "":
@@ -209,16 +216,14 @@ def main():
             break
 
         
-        green_handle_movement(keys_pressed, green)
-        red_handle_movement(keys_pressed, red)
+        p1_handle_movement(keys_pressed, p1)
+        p2_handle_movement(keys_pressed, p2)
 
-        handle_bullets(green_bullets, red_bullets, green, red)
+        handle_attacks(p1_attacks, p2_attacks, p1, p2)
 
-        draw_window(red, green, red_bullets, green_bullets,
-                    red_health, green_health)
+        draw_window(p2, p1, p2_attacks, p1_attacks,
+                    p2_health, p1_health)
 
     main()
 
-
-if __name__ == "__main__":
-    main()
+main()
