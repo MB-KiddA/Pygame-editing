@@ -45,7 +45,7 @@ P2 = pygame.transform.rotate(pygame.transform.scale(
     P2_IMAGE, (PLAYER_WIDTH, PLAYER_HEIGHT)), 270)
 
 
-def draw_window(p2, p1, p2_attacks, p1_attacks, p2_health, p1_health):
+def draw_window(p2, p1, p2_super, p2_swing, p1_super, p1_swing, p2_health, p1_health):
     WIN.blit(BGG, (0, 0))
     pygame.draw.rect(WIN, BLACK, BORDER)
 
@@ -59,11 +59,19 @@ def draw_window(p2, p1, p2_attacks, p1_attacks, p2_health, p1_health):
     WIN.blit(P1, (p1.x, p1.y))
     WIN.blit(P2, (p2.x, p2.y))
 
-    for attack in p2_attacks:
-        pygame.draw.rect(WIN, RED, attack)
+    for super in p2_super:
+        pygame.draw.rect(WIN, RED, super)
 
-    for attack in p1_attacks:
-        pygame.draw.rect(WIN, GREEN, attack)
+    for swing in p2_swing:
+        pygame.draw.rect(WIN, RED, swing)
+
+    for super in p1_super:
+        pygame.draw.rect(WIN, GREEN, super)
+    
+    for swing in p1_swing:
+        pygame.draw.rect(WIN,GREEN, swing)
+    
+
 
     pygame.display.update()
 
@@ -88,41 +96,40 @@ def p2_handle_movement(keys_pressed, p2):
     if keys_pressed[pygame.K_KP5] and p2.y + VEL < 600 - 60:  # DOWN
         p2.y += VEL
 
-
-
-def handle_attacks(p1_attacks, p2_attacks, p1, p2):
-    for swing in p1_attacks:
+def handle_swing(p1_swing, p2_swing, p1, p2):
+    for swing in p1_swing:
 
         swing.x = p1.x + 64
         swing.y = p1.y
         if p2.colliderect(swing):
             pygame.event.post(pygame.event.Event(P1_HIT))
-            p1_attacks.remove(swing)
-            
+            p1_swing.remove(swing)
 
-    for super in p1_attacks:
+    for swing in p2_swing:
+ 
+        swing.x = p2.x - 140
+        swing.y = p2.y
+        if p1.colliderect(swing):
+            pygame.event.post(pygame.event.Event(P2_HIT))
+            p2_swing.remove(swing)
+
+def handle_super(p1_super, p2_super, p1, p2):        
+
+    for super in p1_super:
         super.x += BULLET_VEL
         if p2.colliderect(super):
             pygame.event.post(pygame.event.Event(P1_HIT))
-            p1_attacks.remove(super)
-        elif super.x < 0:
-            p1_attacks.remove(super)
+            p1_super.remove(super)
+        elif super.x > 800:
+            p1_super.remove(super)
 
-    for swing in p2_attacks:
- 
-        swing.x = p2.x - 60
-        if p1.colliderect(swing):
-            pygame.event.post(pygame.event.Event(P2_HIT))
-            p2_attacks.remove(swing)
-
-
-    for super in p2_attacks:
+    for super in p2_super:
         super.x -= BULLET_VEL
         if p1.colliderect(super):
             pygame.event.post(pygame.event.Event(P2_HIT))
-            p2_attacks.remove(super)
-        elif super.x > 800:
-            p2_attacks.remove(super)
+            p2_super.remove(super)
+        elif super.x < 0:
+            p2_super.remove(super)
         
 
 
@@ -140,11 +147,13 @@ def main():
     p2 = pygame.Rect(600, 300, PLAYER_WIDTH, PLAYER_HEIGHT)
     gone = 0
     here = 0
-    p2_attacks = []
-    p1_attacks = []
+    p1_super = []
+    p2_super = []
+    p1_swing = []
+    p2_swing = []
 
-    p2_health = 2
-    p1_health = 2
+    p2_health = 4
+    p1_health = 4
     clock = pygame.time.Clock()
     run = True
     while run:
@@ -161,48 +170,48 @@ def main():
                     print(gone)
                     if gone == 1:
                         swing = pygame.Rect(
-                            p1.x , p1.y, 70, 70)
+                            p1.x , p1.y, 120, 70)
                         
-                        p1_attacks.append(swing)
+                        p1_swing.append(swing)
 
                         ATTACK_FIRE_SOUND.play()
                     if gone == 2: 
-                        p1_attacks.remove(swing)
+                        p1_swing.remove(swing)
                         gone = 0
 
 
 
-                if event.key == pygame.K_y and len(p1_attacks) < MAX_SUPER:
-                    super = pygame.Rect(
-                        p1.x, p1.y + 30, 70, 10)
-                    p1_attacks.append(super)
-                
-                if event.key == pygame.K_u and len(p1_attacks) < MAX_SUPER:
+                if event.key == pygame.K_y and len(p1_super) < MAX_ATTACKS:
                     super = pygame.Rect(
                         p1.x, p1.y + 30, 10, 70)
-                    p1_attacks.append(super)
+                    p1_super.append(super)
+                
+                if event.key == pygame.K_u and len(p1_super) < MAX_ATTACKS:
+                    super = pygame.Rect(
+                        p1.x, p1.y + 30, 70, 10)
+                    p1_super.append(super)
 
                 if event.key == pygame.K_UP:
                     here += 1
                     if here == 1:
-                        attack = pygame.Rect(
-                            p2.x, p2.y, 70, 70)
-                        p2_attacks.append(swing)
+                        swing = pygame.Rect(
+                            p2.x - 140, p2.y, 140, 70)
+                        p2_swing.append(swing)
                         ATTACK_FIRE_SOUND.play()
                     if here == 2:
-                        p2_attacks.remove(swing)
+                        p2_swing.remove(swing)
                         here = 0
 
-                if event.key == pygame.K_RIGHT and len(p2_attacks) < MAX_SUPER:
+                if event.key == pygame.K_RIGHT and len(p2_super) < MAX_ATTACKS:
                     super = pygame.Rect(
                         p2.x, p2.y + p2.height//2 - 2, 70, 10)
-                    p2_attacks.append(super)
+                    p2_super.append(super)
 
-                if event.key == pygame.K_DOWN and len(p2_attacks) < MAX_SUPER:
+                if event.key == pygame.K_DOWN and len(p2_super) < MAX_ATTACKS:
                     super = pygame.Rect(
                         p2.x, p2.y + p2.height//2 - 2, 10, 70)
-                    p2_attacks.append(super)
-                    
+                    p2_super.append(super)
+
                     
 
             if event.type == P1_HIT:
@@ -230,9 +239,11 @@ def main():
         p1_handle_movement(keys_pressed, p1)
         p2_handle_movement(keys_pressed, p2)
 
-        handle_attacks(p1_attacks, p2_attacks, p1, p2)
+        handle_swing(p1_swing, p2_swing, p1, p2)
+        handle_super(p1_super, p2_super, p1, p2)
 
-        draw_window(p2, p1, p2_attacks, p1_attacks,
+
+        draw_window(p2, p1, p2_swing, p2_super, p1_swing, p1_super,
                     p2_health, p1_health)
 
     main()
