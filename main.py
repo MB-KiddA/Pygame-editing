@@ -69,13 +69,13 @@ def draw_window(red, green, red_bullets, green_bullets, red_health, green_health
 
 
 def green_handle_movement(keys_pressed, green):
-    if keys_pressed[pygame.K_f] and green.x - VEL > 0:  # LEFT
+    if keys_pressed[pygame.K_a] and green.x - VEL > 0:  # LEFT
         green.x -= VEL
-    if keys_pressed[pygame.K_h] and green.x + VEL < 740:  # RIGHT
+    if keys_pressed[pygame.K_d] and green.x + VEL < 740:  # RIGHT
         green.x += VEL
-    if keys_pressed[pygame.K_t] and green.y - VEL > BORDER.y:  # UP
+    if keys_pressed[pygame.K_w] and green.y - VEL > BORDER.y:  # UP
         green.y -= VEL
-    if keys_pressed[pygame.K_g] and green.y + VEL + green.height < HEIGHT - 20:  # DOWN
+    if keys_pressed[pygame.K_s] and green.y + VEL + green.height < HEIGHT - 20:  # DOWN
         green.y += VEL
 
 
