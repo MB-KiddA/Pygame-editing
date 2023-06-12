@@ -104,6 +104,7 @@ def handle_swing(p1_swing, p2_swing, p1, p2):
         if p2.colliderect(swing):
             pygame.event.post(pygame.event.Event(P1_HIT))
             p1_swing.remove(swing)
+            main.gone = 0
 
     for swing in p2_swing:
  
@@ -112,6 +113,7 @@ def handle_swing(p1_swing, p2_swing, p1, p2):
         if p1.colliderect(swing):
             pygame.event.post(pygame.event.Event(P2_HIT))
             p2_swing.remove(swing)
+            main.here = 0
 
 def handle_super(p1_super, p2_super, p1, p2):        
 
